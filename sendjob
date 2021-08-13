@@ -3,21 +3,28 @@ import argparse
 import os
 from shutil import copy2, move, rmtree
 from datetime import datetime
+import configparser
 
 # system dependent settings #
 #############################
-ORCA_4_EXE = ''
-ORCA_5_EXE = ''
-GAUSSIAN_16_EXE = ''
-XTB_640_EXE = ''
-XTB_641_EXE = ''
+SCR_DIR = os.path.dirname(__file__)
+print(os.path.join(SCR_DIR,'config','config.txt'))
+
+config = configparser.ConfigParser()
+config.read(os.path.join(SCR_DIR,'config','config.txt'))
+print(config.sections())
+ORCA_4_EXE = config.get('executables folder', 'ORCA_4_EXE')
+ORCA_5_EXE = config.get('executables folder', 'ORCA_5_EXE')
+GAUSSIAN_16_EXE = config.get('executables folder', 'GAUSSIAN_16_EXE')
+XTB_640_EXE = config.get('executables folder', 'XTB_640_EXE')
+XTB_641_EXE = config.get('executables folder', 'XTB_641_EXE')
 #############################
 softwares = {
     'orca_4':{'NAME':'ORCA 4.0.1','EXECUTABLE':ORCA_4_EXE, 'INPUT_FORMAT':['inp'], 'OUTPUT_FORMAT':'out'},
     'orca_5':{'NAME':'ORCA 5.0.1','EXECUTABLE':ORCA_5_EXE, 'INPUT_FORMAT':['inp'], 'OUTPUT_FORMAT':'out'},
     'gaussian_16':{'NAME':'GAUSSIAN 16','EXECUTABLE':GAUSSIAN_16_EXE, 'INPUT_FORMAT':['gjf','com'], 'OUTPUT_FORMAT':'log'},
-    'xtb_6.4.0':{'NAME':'XTB 6.4.0','EXECUTABLE':XTB_640_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
-    'xtb_6.4.1':{'NAME':'XTB 6.4.1','EXECUTABLE':XTB_641_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
+    'xtb_640':{'NAME':'XTB 6.4.0','EXECUTABLE':XTB_640_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
+    'xtb_641':{'NAME':'XTB 6.4.1','EXECUTABLE':XTB_641_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
 }
 
 #     arguments parsing     #
@@ -67,6 +74,8 @@ def run_xtb(inputFile, flags):
             copy2(inputFile,f"{outputFolder}/{inputFile}")
             os.chdir(outputFolder)
             os.system(runString)
+    else:
+        os.system(runString)
     os.chdir(MAIN_DIR)
 
 def run_software(software, input, flags):
@@ -74,8 +83,8 @@ def run_software(software, input, flags):
         'orca_4':run_orca,
         'orca_5':run_orca,
         'gaussian_16':run_gaussian,
-        'xtb_6.4.0':run_xtb,
-        'xtb_6.4.1':run_xtb
+        'xtb_640':run_xtb,
+        'xtb_641':run_xtb
     }
     func = switcher.get(software, lambda:'Undefined Method')
     func(input, flags)
