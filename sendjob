@@ -1,0 +1,143 @@
+#!/usr/bin/env python3
+import argparse
+import os
+from shutil import copy2, move, rmtree
+from datetime import datetime
+
+# system dependent settings #
+#############################
+ORCA_4_EXE = '/home/attilio/opt/orca/orca'
+ORCA_5_EXE = '/home/attilio/opt/orca-5.0.1/orca'
+GAUSSIAN_16_EXE = '/home/attilio/opt/gaussian16/g16/g16'
+XTB_640_EXE = '/home/attilio/opt/xtb-6.4.0/bin/xtb'
+XTB_641_EXE = ''
+#############################
+softwares = {
+    'orca_4':{'NAME':'ORCA 4.0.1','EXECUTABLE':ORCA_4_EXE, 'INPUT_FORMAT':['inp'], 'OUTPUT_FORMAT':'out'},
+    'orca_5':{'NAME':'ORCA 5.0.1','EXECUTABLE':ORCA_5_EXE, 'INPUT_FORMAT':['inp'], 'OUTPUT_FORMAT':'out'},
+    'gaussian_16':{'NAME':'GAUSSIAN 16','EXECUTABLE':GAUSSIAN_16_EXE, 'INPUT_FORMAT':['gjf','com'], 'OUTPUT_FORMAT':'log'},
+    'xtb_6.4.0':{'NAME':'XTB 6.4.0','EXECUTABLE':XTB_640_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
+    'xtb_6.4.1':{'NAME':'XTB 6.4.1','EXECUTABLE':XTB_641_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
+}
+
+#     arguments parsing     #
+#############################
+parser = argparse.ArgumentParser()
+parser.add_argument('-s', '--software', type=str,choices=softwares.keys(), help='The software to submit the JOB', required=True)
+parser.add_argument('-j', '--jobs', type=str, nargs='+', help='Input files suitable to selected SOFTWARE', required=True)
+parser.add_argument('-f','--flags', type=str, help='Custom flags for XTB jobs')
+parser.add_argument('--xtbf', help='Run XTB calculation in a subfolder', action='store_true')
+args = parser.parse_args()
+
+#        run methods        #
+#############################
+def run_orca(inputFile, flags):
+    outputFile = f"{inputFile.split('.')[0]}.{softwares[args.software]['OUTPUT_FORMAT']}"
+    runString = f"{softwares[args.software]['EXECUTABLE']} {inputFile} > {outputFile} 2>&1"
+    os.system(runString)  
+
+def run_gaussian(inputFile, flags):
+    outputFile = f"{inputFile.split('.')[0]}.{softwares[args.software]['OUTPUT_FORMAT']}"
+    runString = f"{softwares[args.software]['EXECUTABLE']} {inputFile} > {outputFile} 2>&1"
+    os.system(runString) 
+
+def run_xtb(inputFile, flags):
+    MAIN_DIR = os.getcwd()
+    outputFolder = inputFile.split('.')[0]
+    outputFile = 'xtb.output'
+    if flags:
+        runString = f"{softwares[args.software]['EXECUTABLE']} {inputFile} {flags} > {outputFile} 2>&1"
+    else:
+        runString = f"{softwares[args.software]['EXECUTABLE']} {inputFile} > {outputFile} 2>&1"
+
+    if args.xtbf:
+        if os.path.isdir(outputFolder):
+            if not os.path.isfile(inputFile):
+                print()
+                print( "*\tFATAL ERROR: Missing input\n*\tNOTHING DONE")
+                print()
+            else:
+                rmtree(outputFolder)
+                os.mkdir(outputFolder)
+                copy2(inputFile,f"{outputFolder}/{inputFile}")
+                os.chdir(outputFolder)
+                os.system(runString)
+        else:
+            os.mkdir(outputFolder)
+            copy2(inputFile,f"{outputFolder}/{inputFile}")
+            os.chdir(outputFolder)
+            os.system(runString)
+    os.chdir(MAIN_DIR)
+
+def run_software(software, input, flags):
+    switcher = {
+        'orca_4':run_orca,
+        'orca_5':run_orca,
+        'gaussian_16':run_gaussian,
+        'xtb_6.4.0':run_xtb,
+        'xtb_6.4.1':run_xtb
+    }
+    func = switcher.get(software, lambda:'Undefined Method')
+    func(input, flags)
+
+# WAITING FOR PYTHON 3.10
+# def run_software(software):
+#     match software:
+#         case 'orca_4':
+#             run_orca()
+#         case 'orca_5':
+#             run_orca()
+#         case 'gaussian_16':
+#             run_gaussian()
+#         case 'xtb_6.4.0':
+#             run_xtb()
+#         case 'xtb_6.4.1':
+#             run_xtb()
+
+
+#        general info       #
+#############################
+SOFTWARE_NAME = softwares[args.software]['NAME']
+NUMBER_OF_JOBS = len(args.jobs)
+SPACER = ' '*78
+print()
+print('#'*80)
+print(f'#{SPACER}#')
+print(f'\t\t\tRUNNING {SOFTWARE_NAME} QUEUE')
+print(f'#{SPACER}#')
+print('#'*80)
+print()
+print(f'STARTING AT:\t{datetime.now()}')
+print(f'NUMBER OF JOBS:\t{NUMBER_OF_JOBS}')
+print()
+print('JOBLIST:')
+for id,job in enumerate(args.jobs):
+    print(f'\t({id+1}) {job}')
+print()
+print('#'*80)
+print()
+
+#      queue execution      #
+#############################
+for id,job in enumerate(args.jobs):
+    print('*'*80)
+    print(f'JOB NAME\t{job}')
+    print(f'JOB NUMBER\t{id+1}')
+    print()
+    print(f'TOTAL JOBS:\t{NUMBER_OF_JOBS}')
+    print(f'REMAINING JOBS:\t{NUMBER_OF_JOBS-id-1}')
+    print('STATUS:\tRUNNING')
+    run_software(args.software, job, args.flags)
+    print('STATUS:\tDONE')
+    print('*'*80)
+    print()
+
+print(f'DONE AT:\t{datetime.now()}')
+print('*'*80)
+print(f'\t\t\tFINISHED {SOFTWARE_NAME} QUEUE')
+print(f'\t\t\tThanks for your patience')
+print('*'*80)
+print()
+
+
+
