@@ -6,10 +6,10 @@ from datetime import datetime
 
 # system dependent settings #
 #############################
-ORCA_4_EXE = '/home/attilio/opt/orca/orca'
-ORCA_5_EXE = '/home/attilio/opt/orca-5.0.1/orca'
-GAUSSIAN_16_EXE = '/home/attilio/opt/gaussian16/g16/g16'
-XTB_640_EXE = '/home/attilio/opt/xtb-6.4.0/bin/xtb'
+ORCA_4_EXE = ''
+ORCA_5_EXE = ''
+GAUSSIAN_16_EXE = ''
+XTB_640_EXE = ''
 XTB_641_EXE = ''
 #############################
 softwares = {
