@@ -1,4 +1,4 @@
-[DEFAULT]
+[executables folder]
 ORCA_4_EXE = ''
 ORCA_5_EXE = ''
 GAUSSIAN_16_EXE = ''
