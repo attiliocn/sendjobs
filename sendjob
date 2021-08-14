@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 import argparse
+import sys
 import os
 from shutil import copy2, move, rmtree
 from datetime import datetime
 import configparser
+
+sys.stdout.reconfigure(line_buffering=True)
 
 # system dependent settings #
 #############################
@@ -12,7 +15,6 @@ print(os.path.join(SCR_DIR,'config','config.txt'))
 
 config = configparser.ConfigParser()
 config.read(os.path.join(SCR_DIR,'config','config.txt'))
-print(config.sections())
 ORCA_4_EXE = config.get('executables folder', 'ORCA_4_EXE')
 ORCA_5_EXE = config.get('executables folder', 'ORCA_5_EXE')
 GAUSSIAN_16_EXE = config.get('executables folder', 'GAUSSIAN_16_EXE')
