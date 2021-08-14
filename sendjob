@@ -11,8 +11,6 @@ sys.stdout.reconfigure(line_buffering=True)
 # system dependent settings #
 #############################
 SCR_DIR = os.path.dirname(__file__)
-print(os.path.join(SCR_DIR,'config','config.txt'))
-
 config = configparser.ConfigParser()
 config.read(os.path.join(SCR_DIR,'config','config.txt'))
 ORCA_4_EXE = config.get('executables folder', 'ORCA_4_EXE')
@@ -149,6 +147,3 @@ print(f'\t\t\tFINISHED {SOFTWARE_NAME} QUEUE')
 print(f'\t\t\tThanks for your patience')
 print('*'*80)
 print()
-
-
-
