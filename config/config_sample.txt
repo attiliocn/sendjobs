@@ -1,6 +1,7 @@
 [executables folder]
 ORCA_4_EXE = ''
 ORCA_5_EXE = ''
+GAUSSIAN_09_EXE = ''
 GAUSSIAN_16_EXE = ''
 XTB_640_EXE = ''
 XTB_641_EXE = ''
