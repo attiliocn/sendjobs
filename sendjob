@@ -48,7 +48,10 @@ def run_orca(inputFile, flags):
 def run_gaussian(inputFile, flags):
     outputFile = f"{inputFile.split('.')[0]}.{softwares[args.software]['OUTPUT_FORMAT']}"
     runString = f"{softwares[args.software]['EXECUTABLE']} {inputFile} > {outputFile} 2>&1"
+    clear_gaussian_scr()
     os.system(runString) 
+    clear_gaussian_scr()
+    
 
 def run_xtb(inputFile, flags):
     MAIN_DIR = os.getcwd()
@@ -121,6 +124,12 @@ def run_software(software, input, flags):
     }
     func = switcher.get(software, lambda:'Undefined Method')
     func(input, flags)
+
+def clear_gaussian_scr():
+    GAUSS_SCR_DIR = os.environ['GAUSS_SCRDIR']
+    dir_content = next(os.scandir(GAUSS_SCR_DIR), None)
+    if not dir_content == None:
+       os.system('rm -r $GAUSS_SCRDIR/*')
 
 # WAITING FOR PYTHON 3.10
 # def run_software(software):
