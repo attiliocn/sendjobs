@@ -28,7 +28,8 @@ softwares = {
     'gaussian_16':{'NAME':'GAUSSIAN 16','EXECUTABLE':GAUSSIAN_16_EXE, 'INPUT_FORMAT':['gjf','com'], 'OUTPUT_FORMAT':'log'},
     'xtb_640':{'NAME':'XTB 6.4.0','EXECUTABLE':XTB_640_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
     'xtb_641':{'NAME':'XTB 6.4.1','EXECUTABLE':XTB_641_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
-    'crest':{'NAME':'CREST','EXECUTABLE':CREST_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
+    'crest':{'NAME':'CREST','EXECUTABLE':CREST_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
+    'cregen':{'NAME':'CREST','EXECUTABLE':CREST_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
 }
 
 #     arguments parsing     #
@@ -115,6 +116,38 @@ def run_crest(inputFile, flags):
         os.system(runString)
     os.chdir(MAIN_DIR)
 
+def run_cregen(inputFile, flags):
+    MAIN_DIR = os.getcwd()
+    outputFolder = inputFile.split('.')[0]
+    outputFile = 'cregen.output'
+    if flags:
+        runString = f"{softwares[args.software]['EXECUTABLE']} --cregen {inputFile} {flags} > {outputFile} 2>&1"
+    else:
+        runString = f"{softwares[args.software]['EXECUTABLE']} --cregen {inputFile} > {outputFile} 2>&1"
+
+    if args.xtbf:
+        if os.path.isdir(outputFolder):
+            if not os.path.isfile(inputFile):
+                print()
+                print( "*\tFATAL ERROR: Missing input\n*\tNOTHING DONE")
+                print()
+            else:
+                rmtree(outputFolder)
+                os.mkdir(outputFolder)
+                copy2(inputFile,f"{outputFolder}/{inputFile}")
+                os.chdir(outputFolder)
+                os.system(runString)
+        else:
+            os.mkdir(outputFolder)
+            copy2(inputFile,f"{outputFolder}/{inputFile}")
+            os.chdir(outputFolder)
+            os.system(f"obabel -f 1 -l 1 -ixyz {inputFile} -otmol >> coord")
+            os.system(runString)
+    else:
+        os.system(f"obabel -f 1 -l 1 -ixyz {inputFile} -otmol >> coord")
+        os.system(runString)
+    os.chdir(MAIN_DIR)
+
 def run_software(software, input, flags):
     switcher = {
         'orca_4':run_orca,
@@ -123,7 +156,8 @@ def run_software(software, input, flags):
         'gaussian_09':run_gaussian,
         'xtb_640':run_xtb,
         'xtb_641':run_xtb,
-        'crest':run_crest
+        'crest':run_crest,
+        'cregen':run_cregen
     }
     func = switcher.get(software, lambda:'Undefined Method')
     func(input, flags)
