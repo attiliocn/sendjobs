@@ -166,7 +166,7 @@ def clear_gaussian_scr():
     GAUSS_SCR_DIR = os.environ['GAUSS_SCRDIR']
     dir_content = next(os.scandir(GAUSS_SCR_DIR), None)
     if not dir_content == None:
-       os.system('rm -r $GAUSS_SCRDIR/*')
+       os.system('rm -rf $GAUSS_SCRDIR/*')
 
 # WAITING FOR PYTHON 3.10
 # def run_software(software):
