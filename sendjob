@@ -188,6 +188,7 @@ def clear_gaussian_scr():
 SOFTWARE_NAME = softwares[args.software]['NAME']
 NUMBER_OF_JOBS = len(args.jobs)
 SPACER = ' '*78
+queue_starting_time = datetime.now()
 print()
 print('#'*80)
 print(f'#{SPACER}#')
@@ -195,7 +196,7 @@ print(f'\t\t\tRUNNING {SOFTWARE_NAME} QUEUE')
 print(f'#{SPACER}#')
 print('#'*80)
 print()
-print(f'STARTING AT:\t{datetime.now()}')
+print(f'QUEUE STARTING TIME:\t{queue_starting_time}')
 print(f'NUMBER OF JOBS:\t{NUMBER_OF_JOBS}')
 print()
 print('JOBLIST:')
@@ -208,6 +209,7 @@ print()
 #      queue execution      #
 #############################
 for id,job in enumerate(args.jobs):
+    job_starting_time = datetime.now()
     print('*'*80)
     print(f'JOB NAME\t{job}')
     print(f'JOB NUMBER\t{id+1}')
@@ -216,11 +218,13 @@ for id,job in enumerate(args.jobs):
     print(f'REMAINING JOBS:\t{NUMBER_OF_JOBS-id-1}')
     print('STATUS:\tRUNNING')
     run_software(args.software, job, args.flags)
+    print(f"JOB ELAPSED TIME:\t{datetime.now() - job_starting_time}")
     print('STATUS:\tDONE')
     print('*'*80)
     print()
 
-print(f'DONE AT:\t{datetime.now()}')
+print(f'QUEUE FINISHING TIME:\t{datetime.now()}')
+print(f"QUEUE ELAPSED TIME:\t{datetime.now() - queue_starting_time}")
 print('*'*80)
 print(f'\t\t\tFINISHED {SOFTWARE_NAME} QUEUE')
 print(f'\t\t\tThanks for your patience')
