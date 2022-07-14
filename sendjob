@@ -19,6 +19,7 @@ GAUSSIAN_09_EXE = config.get('executables folder', 'GAUSSIAN_09_EXE')
 GAUSSIAN_16_EXE = config.get('executables folder', 'GAUSSIAN_16_EXE')
 XTB_640_EXE = config.get('executables folder', 'XTB_640_EXE')
 XTB_641_EXE = config.get('executables folder', 'XTB_641_EXE')
+XTB_645_EXE = config.get('executables folder', 'XTB_645_EXE')
 CREST_EXE = config.get('executables folder', 'CREST_EXE')
 #############################
 softwares = {
@@ -28,6 +29,7 @@ softwares = {
     'gaussian_16':{'NAME':'GAUSSIAN 16','EXECUTABLE':GAUSSIAN_16_EXE, 'INPUT_FORMAT':['gjf','com'], 'OUTPUT_FORMAT':'log'},
     'xtb_640':{'NAME':'XTB 6.4.0','EXECUTABLE':XTB_640_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
     'xtb_641':{'NAME':'XTB 6.4.1','EXECUTABLE':XTB_641_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
+    'xtb_645':{'NAME':'XTB 6.4.5','EXECUTABLE':XTB_645_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
     'crest':{'NAME':'CREST','EXECUTABLE':CREST_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'},
     'cregen':{'NAME':'CREST','EXECUTABLE':CREST_EXE, 'INPUT_FORMAT':['xyz'], 'OUTPUT_FORMAT':'out'}
 }
@@ -156,6 +158,7 @@ def run_software(software, input, flags):
         'gaussian_09':run_gaussian,
         'xtb_640':run_xtb,
         'xtb_641':run_xtb,
+        'xtb_645':run_xtb,
         'crest':run_crest,
         'cregen':run_cregen
     }
